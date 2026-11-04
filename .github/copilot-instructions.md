@@ -16,7 +16,8 @@ The application currently lives in `credence/` and is a minimal React starter. P
 - TypeScript uses bundler module resolution, strict unused-local/parameter checks, `react-jsx`, and no emit.
 - The current entry point is `credence/src/main.tsx`, which renders `App` in `StrictMode`.
 - The current UI is a starter screen in `credence/src/App.tsx`, with global styles in `credence/src/index.css` and component styles in `credence/src/App.css`.
-- Tailwind CSS and TanStack Query are not currently installed or configured. Do not use their APIs or add setup without an approved dependency/configuration change.
+- Tailwind CSS is configured through the official `@tailwindcss/vite` plugin and imported from `credence/src/index.css`.
+- TanStack Query is installed as `@tanstack/react-query`; the shared `QueryClient` is provided by `credence/src/providers/QueryProvider.tsx`.
 - No backend, API client, routing, or server-state architecture has been established. Do not invent endpoints, response shapes, or persistence behavior.
 
 ## Component Organization and Reuse
@@ -40,13 +41,13 @@ The application currently lives in `credence/` and is a minimal React starter. P
 
 - Treat the Banani reference as the visual source of truth for layout, typography, spacing, color, interaction, and responsive behavior.
 - Existing CSS conventions in `credence/src/index.css` and `credence/src/App.css` take precedence until a deliberate styling migration is approved.
-- Tailwind is a planned option, not a current dependency. If introduced, use utility classes consistently, keep repeated patterns composable, and avoid arbitrary values when a shared token or existing utility expresses the design.
+- Use Tailwind utilities consistently, keep repeated patterns composable, and avoid arbitrary values when a shared token or existing utility expresses the design.
 - Keep design tokens centralized and use the established CSS variables or an approved token system instead of scattering literal colors, spacing, and typography values.
 - Prefer semantic HTML and predictable responsive breakpoints. Validate mobile, tablet, and desktop layouts against the reference.
 
 ## TanStack Query and API Interactions
 
-- TanStack Query is not currently installed. When approved and introduced, create one shared `QueryClient` and provider at the application boundary.
+- Use the shared `QueryClient` and `QueryClientProvider` from `credence/src/providers/QueryProvider.tsx` at the application boundary.
 - Use query keys that include every input affecting a request, and centralize key factories where they become shared.
 - Keep request functions and response types separate from components. Do not fetch in effects when a query is the appropriate abstraction.
 - Set cache and stale times intentionally based on data behavior; do not disable caching by default.
