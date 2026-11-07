@@ -1,5 +1,7 @@
+import type { ReactNode } from 'react'
+
 type FeatureCardProps = {
-  icon: React.ReactNode
+  icon: ReactNode
   title: string
   description: string
 }

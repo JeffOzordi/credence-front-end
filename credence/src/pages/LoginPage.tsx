@@ -16,7 +16,7 @@ export function LoginPage() {
         </div>
         </div>
 
-        <h2 className="text-[clamp(2.2rem,4vw,3.2rem)] font-bold leading-none tracking-[-0.065em] text-[#193432]">
+        <h2 className="text-[clamp(2.2rem,4vw,3.2rem)] font-bold leading-none tracking-[-0.065em] text-[#193452]">
           Welcome back
         </h2>
 

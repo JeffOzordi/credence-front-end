@@ -1,6 +1,14 @@
 import { useState } from 'react'
 import type { FormEvent } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
+
+export type SignupValues = {
+  businessName: string
+  fullName: string
+  email: string
+  password: string
+  acceptedTerms: boolean
+}
 
 type FormErrors = {
   businessName?: string
@@ -26,9 +34,19 @@ function EyeIcon({ visible }: { visible: boolean }) {
 const inputClass = (hasError: boolean) =>
   `h-12 w-full rounded-[9px] border bg-white px-4 text-sm text-[#203333] outline-none transition placeholder:text-[#a7b0ad] focus:border-[#527f6a] focus:ring-4 focus:ring-[#527f6a]/10 ${hasError ? 'border-[#c66b68]' : 'border-[#dce3df]'}`
 
-export function SignupForm() {
-  const [values, setValues] = useState({ businessName: '', fullName: '', email: '', password: '' })
-  const [acceptedTerms, setAcceptedTerms] = useState(false)
+type SignupFormProps = {
+  initialValues?: Partial<SignupValues>
+}
+
+export function SignupForm({ initialValues }: SignupFormProps) {
+  const navigate = useNavigate()
+  const [values, setValues] = useState({
+    businessName: initialValues?.businessName ?? '',
+    fullName: initialValues?.fullName ?? '',
+    email: initialValues?.email ?? '',
+    password: initialValues?.password ?? '',
+  })
+  const [acceptedTerms, setAcceptedTerms] = useState(initialValues?.acceptedTerms ?? false)
   const [showPassword, setShowPassword] = useState(false)
   const [errors, setErrors] = useState<FormErrors>({})
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -52,7 +70,12 @@ export function SignupForm() {
     if (Object.keys(nextErrors).length > 0) return
 
     setIsSubmitting(true)
-    window.setTimeout(() => setIsSubmitting(false), 900)
+    window.setTimeout(() => {
+      navigate('/onboarding/business', {
+        state: { signupValues: { ...values, acceptedTerms } },
+      })
+      setIsSubmitting(false)
+    }, 500)
   }
 
   return (
@@ -88,7 +111,7 @@ export function SignupForm() {
         {errors.terms && <p className="mt-1.5 text-xs text-[#b34f55]" id="terms-error">{errors.terms}</p>}
       </div>
 
-      <button className="mt-5 h-12 w-full rounded-[9px] bg-[#183b36] text-sm font-semibold text-white shadow-[0_7px_18px_rgba(24,59,54,0.18)] transition hover:bg-[#102f2b] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#527f6a] disabled:cursor-wait disabled:opacity-70" type="submit" disabled={isSubmitting}>
+      <button className="mt-5 h-12 w-full rounded-[9px] bg-[#193452] text-sm font-semibold text-white shadow-[0_7px_18px_rgba(24,59,54,0.18)] transition hover:bg-[#102f2b] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#527f6a] disabled:cursor-wait disabled:opacity-70" type="submit" disabled={isSubmitting}>
         {isSubmitting ? 'Creating account...' : 'Create account & continue'}
       </button>
 

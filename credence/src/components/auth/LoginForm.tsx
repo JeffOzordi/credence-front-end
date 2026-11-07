@@ -148,7 +148,7 @@ export function LoginForm() {
         </label>
 
         <button
-          className="h-12 w-full rounded-[9px] bg-[#183b36] text-sm font-semibold text-white shadow-[0_7px_18px_rgba(24,59,54,0.18)] transition hover:bg-[#102f2b] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#527f6a] disabled:cursor-wait cursor-pointer disabled:opacity-70"
+          className="h-12 w-full rounded-[9px] bg-[#193452] text-sm font-semibold text-white shadow-[0_7px_18px_rgba(24,59,54,0.18)] transition hover:bg-[#102f2b] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#527f6a] disabled:cursor-wait cursor-pointer disabled:opacity-70"
           type="submit"
           disabled={isSubmitting}
         >

@@ -1,5 +1,5 @@
-import { FeatureCard } from "./FeatureCard.tsx";
-import logo from "../../assets/credence_logo.png";
+import { FeatureCard } from './FeatureCard.tsx'
+import logo from '../../assets/credence_logo.png'
 
 function ReminderIcon() {
   return (
@@ -63,19 +63,17 @@ function AnalyticsIcon() {
 
 export function SignupValuePanel() {
   return (
-    <section className="relative hidden min-h-screen overflow-hidden bg-[#102d2d] px-[clamp(32px,5vw,76px)] py-[clamp(34px,5vw,68px)] text-white lg:flex lg:w-[48%] lg:flex-col">
+    <section className="relative hidden min-h-screen overflow-hidden bg-[#193452] px-[clamp(32px,5vw,76px)] py-[clamp(34px,5vw,68px)] text-white lg:flex lg:w-[48%] lg:flex-col">
       <div className="pointer-events-none absolute -right-36 -top-32 size-110 rounded-full border border-[#769f88]/20" />
       <div className="pointer-events-none absolute -bottom-48 -left-40 size-130 rounded-full border border-[#769f88]/15" />
 
       <div className="relative z-10 flex items-center ">
-        <img src={logo} height={65} width={65} className="rounded-full" />
-        <span className="text-[32px] font-semibold tracking-tighter">
-          redence
-        </span>
+        <img src={logo} height={65} width={65} className='rounded-full'/>
+          <span className="text-[32px] font-semibold tracking-tighter">redence</span>
       </div>
 
-      <div className="relative z-10 mt-5 my-auto max-w-115">
-        <h1 className="text-[clamp(2.10rem,3.0vw,4.10rem)]  font-bold leading-[1.08] tracking-[-0.055em]">
+      <div className="relative z-10 my-auto max-w-115">
+        <h1 className="text-[clamp(2.10rem,2.5vw,4.10rem)]  font-bold leading-[1.08] tracking-[-0.055em]">
           Why businesses choose Credence
         </h1>
 
@@ -98,9 +96,9 @@ export function SignupValuePanel() {
         </div>
       </div>
 
-      <p className="relative z-10 text-[11px] text-slate-400 mt-8">
+      <p className="relative z-10 mt-8 text-[11px] text-slate-300">
         © 2026 Credence. Built for businesses that mean business.
       </p>
     </section>
-  );
+  )
 }

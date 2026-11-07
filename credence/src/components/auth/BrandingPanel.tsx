@@ -5,7 +5,7 @@ import logo  from '../../assets/credence_logo.png'
 export function BrandingPanel() {
   return (
     
-<section className="relative hidden min-h-110 flex-col overflow-hidden bg-[#102d2d] px-6 py-7 text-white sm:px-10 sm:py-9 md:flex md:min-h-screen md:w-[56%] md:px-[clamp(40px,6vw,92px)] md:py-[clamp(38px,4vw,64px)]">
+<section className="relative hidden min-h-110 flex-col overflow-hidden bg-[#193452] px-6 py-7 text-white sm:px-10 sm:py-9 md:flex md:min-h-screen md:w-[56%] md:px-[clamp(40px,6vw,92px)] md:py-[clamp(38px,4vw,64px)]">
       <div className="pointer-events-none absolute -right-36 -top-32 size-110 rounded-full border border-[#769f88]/20" />
       <div className="pointer-events-none absolute -bottom-48 -left-40 size-130 rounded-full border border-[#769f88]/15" />
 
