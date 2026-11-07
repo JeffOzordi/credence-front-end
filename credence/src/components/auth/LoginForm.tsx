@@ -1,5 +1,6 @@
 import { useState } from "react";
 import type { FormEvent } from "react";
+import { Link } from "react-router-dom";
 
 type FormErrors = {
   email?: string;
@@ -157,12 +158,12 @@ export function LoginForm() {
 
       <p className="mt-7 text-center text-sm text-[#77827d]">
         New to Credence?{" "}
-        <a
+        <Link
           className="font-semibold text-[#416d54] hover:underline"
-          href="#create-account"
+          to="/signup"
         >
           Create an account
-        </a>
+        </Link>
       </p>
       <p className="mt-7 sm:mt-10 lg:mt-16 text-center text-[11px] leading-5 text-[#9aa39f]">
         Your data is encrypted and protected. Credence is built with security

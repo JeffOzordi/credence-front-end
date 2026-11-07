@@ -9,18 +9,13 @@ export function BrandingPanel() {
       <div className="pointer-events-none absolute -right-36 -top-32 size-110 rounded-full border border-[#769f88]/20" />
       <div className="pointer-events-none absolute -bottom-48 -left-40 size-130 rounded-full border border-[#769f88]/15" />
 
-      <div className="relative z-10 flex items-center gap-3">
-        <img src={logo} height={75} width={75} className='rounded-full'/>
-        <div className="flex-d">
-          <span className="text-[22px] font-semibold tracking-tighter">Credence</span>
-        <p className="mb-4 text-[11px] font-semibold uppercase tracking-[0.18em] text-[#a5d6b2]">
-          Make trust measurable.
-        </p>
-        </div>
+      <div className="relative z-10 flex items-center ">
+        <img src={logo} height={65} width={65} className='rounded-full'/>
+          <span className="text-[32px] font-semibold tracking-tighter">redence</span>
       </div>
 
       <div className="relative z-10 mt-16 max-w-142.5 sm:mt-20 lg:mt-auto">
-        <h1 className="max-w-140 text-[clamp(2.10rem,3.2vw,4.10rem)] font-bold leading-[1.2] tracking-normal text-white">
+        <h1 className="max-w-140 text-[clamp(2.10rem,3.0vw,4.10rem)] font-bold leading-[1.2] tracking-normal text-white">
           Know who owes you.
           <br />
           Collect on time, every time.
