@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import type { FormEvent } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import { useOnboardingDraft } from '../../providers/OnboardingDraftProvider.tsx'
+import { useRegisterAccount } from '../../features/onboarding/hooks/useRegisterAccount.ts'
 
 export type SignupValues = {
   businessName: string
@@ -40,23 +42,24 @@ type SignupFormProps = {
 
 export function SignupForm({ initialValues }: SignupFormProps) {
   const navigate = useNavigate()
+  const { signupDraft, setSignupDraft } = useOnboardingDraft()
+  const registration = useRegisterAccount()
   const [values, setValues] = useState({
-    businessName: initialValues?.businessName ?? '',
-    fullName: initialValues?.fullName ?? '',
-    email: initialValues?.email ?? '',
+    businessName: initialValues?.businessName ?? signupDraft.businessName,
+    fullName: initialValues?.fullName ?? signupDraft.fullName,
+    email: initialValues?.email ?? signupDraft.email,
     password: initialValues?.password ?? '',
   })
   const [acceptedTerms, setAcceptedTerms] = useState(initialValues?.acceptedTerms ?? false)
   const [showPassword, setShowPassword] = useState(false)
   const [errors, setErrors] = useState<FormErrors>({})
-  const [isSubmitting, setIsSubmitting] = useState(false)
-
   function updateValue(field: keyof typeof values, value: string) {
     setValues((current) => ({ ...current, [field]: value }))
     if (errors[field]) setErrors((current) => ({ ...current, [field]: undefined }))
+    registration.reset()
   }
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
     const nextErrors: FormErrors = {}
     if (!values.businessName.trim()) nextErrors.businessName = 'Business name is required.'
@@ -69,23 +72,42 @@ export function SignupForm({ initialValues }: SignupFormProps) {
     setErrors(nextErrors)
     if (Object.keys(nextErrors).length > 0) return
 
-    setIsSubmitting(true)
-    window.setTimeout(() => {
-      navigate('/onboarding/business', {
-        state: { signupValues: { ...values, acceptedTerms } },
+    setSignupDraft({
+      businessName: values.businessName.trim(),
+      fullName: values.fullName.trim(),
+      email: values.email.trim(),
+    })
+
+    try {
+      await registration.mutateAsync({
+        businessName: values.businessName.trim(),
+        fullName: values.fullName.trim(),
+        email: values.email.trim(),
+        password: values.password,
       })
-      setIsSubmitting(false)
-    }, 500)
+      navigate('/onboarding/business', {
+        state: { registrationComplete: true },
+      })
+    } catch {
+      // The mutation error is rendered below.
+    }
   }
 
   return (
     <form className="w-full" onSubmit={handleSubmit} noValidate>
       <div className="grid gap-4 sm:grid-cols-2 sm:gap-x-4 sm:gap-y-4">
-        <div className="sm:col-span-2">
+        <div>
           <label className="mb-2 block text-[13px] font-semibold text-[#344344]" htmlFor="business-name">Business name</label>
           <input className={inputClass(Boolean(errors.businessName))} id="business-name" type="text" autoComplete="organization" placeholder="Your business name" value={values.businessName} onChange={(event) => updateValue('businessName', event.target.value)} aria-invalid={Boolean(errors.businessName)} aria-describedby={errors.businessName ? 'business-name-error' : undefined} />
           {errors.businessName && <p className="mt-1.5 text-xs text-[#b34f55]" id="business-name-error">{errors.businessName}</p>}
         </div>
+
+        <div>
+          <label className="mb-2 block text-[13px] font-semibold text-[#344344]" htmlFor="full-name">Full name</label>
+          <input className={inputClass(Boolean(errors.fullName))} id="full-name" type="text" autoComplete="name" placeholder="Your full name" value={values.fullName} onChange={(event) => updateValue('fullName', event.target.value)} aria-invalid={Boolean(errors.fullName)} aria-describedby={errors.fullName ? 'full-name-error' : undefined} />
+          {errors.fullName && <p className="mt-1.5 text-xs text-[#b34f55]" id="full-name-error">{errors.fullName}</p>}
+        </div>
+
         <div className="sm:col-span-2">
           <label className="mb-2 block text-[13px] font-semibold text-[#344344]" htmlFor="signup-email">Business email</label>
           <input className={inputClass(Boolean(errors.email))} id="signup-email" type="email" autoComplete="email" placeholder="you@company.com" value={values.email} onChange={(event) => updateValue('email', event.target.value)} aria-invalid={Boolean(errors.email)} aria-describedby={errors.email ? 'signup-email-error' : undefined} />
@@ -111,8 +133,14 @@ export function SignupForm({ initialValues }: SignupFormProps) {
         {errors.terms && <p className="mt-1.5 text-xs text-[#b34f55]" id="terms-error">{errors.terms}</p>}
       </div>
 
-      <button className="mt-5 h-12 w-full rounded-[9px] bg-[#193452] text-sm font-semibold text-white shadow-[0_7px_18px_rgba(24,59,54,0.18)] transition hover:bg-[#102f2b] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#527f6a] disabled:cursor-wait disabled:opacity-70" type="submit" disabled={isSubmitting}>
-        {isSubmitting ? 'Creating account...' : 'Create account & continue'}
+      {registration.error && (
+        <p className="mt-4 rounded-lg border border-[#efc7c5] bg-[#fff4f3] px-3 py-2 text-sm text-[#9c3d42]" role="alert">
+          {registration.error.message}
+        </p>
+      )}
+
+      <button className="mt-5 h-12 w-full rounded-[9px] bg-[#193452] text-sm font-semibold text-white shadow-[0_7px_18px_rgba(24,59,54,0.18)] transition hover:bg-[#102f2b] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#527f6a] disabled:cursor-wait disabled:opacity-70" type="submit" disabled={registration.isPending}>
+        {registration.isPending ? 'Creating account...' : 'Create account & continue'}
       </button>
 
       <p className="mt-6 text-center text-sm text-[#77827d]">
