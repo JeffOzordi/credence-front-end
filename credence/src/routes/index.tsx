@@ -1,4 +1,4 @@
-﻿import { Navigate, Outlet, Route, createBrowserRouter, createRoutesFromElements } from 'react-router-dom'
+﻿import { Navigate, Route, createBrowserRouter, createRoutesFromElements } from 'react-router-dom'
 import { AuthLayout } from '../layouts/AuthLayout.tsx'
 import { LoginPage } from '../pages/LoginPage.tsx'
 import { SignupPage } from '../pages/SignupPage.tsx'
@@ -6,11 +6,8 @@ import { BusinessOnboardingPage } from '../pages/BusinessOnboardingPage.tsx'
 import { DashboardLayout } from '../layouts/DashboardLayout.tsx'
 import { OverviewPage } from '../pages/dashboard/OverviewPage.tsx'
 import { DashboardPlaceholderPage } from '../pages/dashboard/DashboardPlaceholderPage.tsx'
-import { getAuthToken } from '../services/auth/tokenStorage.ts'
-
-function ProtectedDashboardRoute() {
-  return getAuthToken() ? <Outlet /> : <Navigate to="/login" replace />
-}
+import { SettingsPage } from '../pages/dashboard/SettingsPage.tsx'
+import { ProtectedDashboardRoute } from './ProtectedDashboardRoute.tsx'
 
 export const router = createBrowserRouter(
   createRoutesFromElements(
@@ -29,7 +26,7 @@ export const router = createBrowserRouter(
           <Route path="/credit-management" element={<DashboardPlaceholderPage />} />
           <Route path="/reports" element={<DashboardPlaceholderPage />} />
           <Route path="/email-templates" element={<DashboardPlaceholderPage />} />
-          <Route path="/settings" element={<DashboardPlaceholderPage />} />
+          <Route path="/settings" element={<SettingsPage />} />
         </Route>
       </Route>
       <Route path="/" element={<Navigate replace to="/login" />} />

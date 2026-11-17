@@ -1,5 +1,7 @@
-import { NavLink } from 'react-router-dom'
+import { useQueryClient } from '@tanstack/react-query'
+import { NavLink, useNavigate } from 'react-router-dom'
 import logo from '../../assets/credence_logo.png'
+import { clearAuthToken } from '../../services/auth/tokenStorage.ts'
 
 const navigation = [
   { label: 'Overview', path: '/overview', icon: 'grid' },
@@ -36,6 +38,16 @@ type SidebarProps = {
 }
 
 export function Sidebar({ onNavigate }: SidebarProps) {
+  const navigate = useNavigate()
+  const queryClient = useQueryClient()
+
+  function handleLogout() {
+    clearAuthToken()
+    queryClient.clear()
+    onNavigate?.()
+    navigate('/login', { replace: true })
+  }
+
   return (
     <aside className="flex h-full min-h-0 w-[260px] shrink-0 flex-col bg-[#193452] px-4 py-5 text-white">
       <div className="mb-7 flex items-center gap-2.5 px-2">
@@ -92,16 +104,16 @@ export function Sidebar({ onNavigate }: SidebarProps) {
         Help &amp; Support
       </NavLink>
 
-      <div className="mt-4 flex items-center gap-3 border-t border-white/15 pt-4">
-        <span className="grid size-9 place-items-center rounded-full bg-[#d6eadb] text-xs font-bold text-[#20563d]">AO</span>
-        <div className="min-w-0 flex-1">
-          <p className="truncate text-xs font-semibold">Adaeze Okafor</p>
-          <p className="truncate text-[10px] text-[#bdcbd8]">Aster Works</p>
-        </div>
-        <button aria-label="Open account menu" className="rounded-md p-1.5 text-[#bdcbd8] hover:bg-white/10 hover:text-white" type="button">
-          <span aria-hidden="true">···</span>
-        </button>
-      </div>
+      <button
+        className="mt-4 flex min-h-11 w-full items-center gap-3 rounded-lg border-t border-white/15 px-3 pt-3 text-left text-[12px] font-medium text-[#c2cfdb] transition hover:bg-white/[0.07] hover:text-white"
+        onClick={handleLogout}
+        type="button"
+      >
+        <svg aria-hidden="true" className="size-[18px] shrink-0" fill="none" viewBox="0 0 24 24">
+          <path d="M10 17l5-5-5-5m5 5H3m9-9h7a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-7" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.7" />
+        </svg>
+        Log out
+      </button>
     </aside>
   )
 }

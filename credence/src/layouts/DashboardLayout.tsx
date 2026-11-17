@@ -7,7 +7,7 @@ import { Sidebar } from '../components/dashboard/Sidebar.tsx'
 const pageDetails: Record<string, { title: string; description: string }> = {
   '/overview': {
     title: 'Overview',
-    description: 'Welcome back, Adaeze. Here is your credit position today.',
+    description: 'Your business credit position at a glance.',
   },
   '/transactions': { title: 'Transactions', description: 'Manage your credit transactions.' },
   '/debtors': { title: 'Debtors', description: 'View and manage your debtors.' },
