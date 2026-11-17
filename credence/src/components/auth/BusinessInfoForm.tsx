@@ -1,23 +1,25 @@
 import { useMemo, useState } from 'react'
 import type { FormEvent, KeyboardEvent } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useCompleteBusinessOnboarding } from '../../features/onboarding/hooks/useCompleteBusinessOnboarding.ts'
+import { useRegisterAccount } from '../../features/onboarding/hooks/useRegisterAccount.ts'
 import { useOnboardingDraft } from '../../providers/OnboardingDraftProvider.tsx'
+import type { BusinessCategory } from '../../services/api/types.ts'
+import { saveAuthToken } from '../../services/auth/tokenStorage.ts'
 
 const categories = [
-  ['financial_services', 'Banking & Financial Services'],
+  ['banking_financial_services', 'Banking & Financial Services'],
   ['microfinance', 'Microfinance'],
-  ['digital_lending', 'Fintech & Digital Lending'],
-  ['cooperatives', 'Cooperatives & Credit Unions'],
+  ['fintech_digital_lending', 'Fintech & Digital Lending'],
+  ['cooperatives_credit_unions', 'Cooperatives & Credit Unions'],
   ['wholesale_distribution', 'Wholesale & Distribution'],
   ['manufacturing', 'Manufacturing'],
   ['retail_ecommerce', 'Retail & E-commerce'],
   ['education', 'Education'],
   ['healthcare', 'Healthcare'],
-  ['real_estate', 'Real Estate & Property Management'],
+  ['real_estate_property_management', 'Real Estate & Property Management'],
   ['logistics_transportation', 'Logistics & Transportation'],
-  ['equipment_leasing', 'Equipment Leasing & Rentals'],
-  ['agriculture', 'Agriculture & Agribusiness'],
+  ['equipment_leasing_rentals', 'Equipment Leasing & Rentals'],
+  ['agriculture_agribusiness', 'Agriculture & Agribusiness'],
   ['professional_services', 'Professional Services'],
   ['utilities_telecommunications', 'Utilities & Telecommunications'],
   ['other', 'Other'],
@@ -25,7 +27,6 @@ const categories = [
 
 type FormErrors = {
   category?: string
-  otherCategory?: string
   phoneNumber?: string
   registrationNumber?: string
   address?: string
@@ -38,8 +39,8 @@ const inputClass = (hasError: boolean) =>
 
 export function BusinessInfoForm() {
   const navigate = useNavigate()
-  const { businessDraft, setBusinessDraft } = useOnboardingDraft()
-  const onboarding = useCompleteBusinessOnboarding()
+  const { signupDraft, businessDraft, setBusinessDraft } = useOnboardingDraft()
+  const registration = useRegisterAccount()
 
   const [search, setSearch] = useState('')
   const [isOpen, setIsOpen] = useState(false)
@@ -62,7 +63,7 @@ export function BusinessInfoForm() {
   ) {
     setBusinessDraft({ ...businessDraft, [field]: value })
     setErrors((current) => ({ ...current, [field]: undefined }))
-    onboarding.reset()
+    registration.reset()
   }
 
   function handleCategoryKeyDown(
@@ -78,13 +79,6 @@ export function BusinessInfoForm() {
 
     if (!businessDraft.category) {
       nextErrors.category = 'Choose a business category.'
-    }
-
-    if (
-      businessDraft.category === 'other' &&
-      !businessDraft.otherCategory.trim()
-    ) {
-      nextErrors.otherCategory = 'Please specify your business category.'
     }
 
     if (!businessDraft.phoneNumber.trim()) {
@@ -104,18 +98,29 @@ export function BusinessInfoForm() {
 
     if (Object.keys(nextErrors).length > 0) return
 
+    if (
+      !signupDraft.businessName.trim() ||
+      !signupDraft.email.trim() ||
+      !signupDraft.password
+    ) {
+      navigate('/signup', { replace: true })
+      return
+    }
+
     try {
-      await onboarding.mutateAsync({
-        category: businessDraft.category,
-        ...(businessDraft.category === 'other'
-          ? { otherCategory: businessDraft.otherCategory.trim() }
-          : {}),
-        phoneNumber: businessDraft.phoneNumber.trim(),
-        registrationNumber: businessDraft.registrationNumber.trim(),
+      const category = businessDraft.category as BusinessCategory
+      const response = await registration.mutateAsync({
+        email: signupDraft.email.trim(),
+        password: signupDraft.password,
+        business_name: signupDraft.businessName.trim(),
+        registration_number: businessDraft.registrationNumber.trim(),
+        phone: businessDraft.phoneNumber.trim(),
         address: businessDraft.address.trim(),
+        category,
       })
 
-      navigate('/overview', { state: { setupCompleted: true } })
+      saveAuthToken(response.access_token, true)
+      navigate('/overview', { replace: true, state: { setupCompleted: true } })
     } catch {
       // The mutation error is rendered below.
     }
@@ -124,7 +129,6 @@ export function BusinessInfoForm() {
   return (
     <form className="w-full" onSubmit={handleSubmit} noValidate>
       <div className="grid gap-4 sm:grid-cols-2 sm:gap-x-4 sm:gap-y-4">
-
         {/* Business Category */}
         <div className="relative">
           <label
@@ -182,21 +186,16 @@ export function BusinessInfoForm() {
                       setBusinessDraft({
                         ...businessDraft,
                         category: value,
-                        otherCategory:
-                          value === 'other'
-                            ? businessDraft.otherCategory
-                            : '',
                       })
 
                       setErrors((current) => ({
                         ...current,
                         category: undefined,
-                        otherCategory: undefined,
                       }))
 
                       setSearch('')
                       setIsOpen(false)
-                      onboarding.reset()
+                      registration.reset()
                     }}
                   >
                     {label}
@@ -254,44 +253,6 @@ export function BusinessInfoForm() {
             </p>
           )}
         </div>
-
-        {/* Other Business Category */}
-        {businessDraft.category === 'other' && (
-          <div className="sm:col-span-2">
-            <label
-              className="mb-2 block text-[13px] font-semibold text-[#344344]"
-              htmlFor="other-category"
-            >
-              Your business category
-            </label>
-
-            <input
-              className={inputClass(Boolean(errors.otherCategory))}
-              id="other-category"
-              placeholder="Describe your business category"
-              required
-              value={businessDraft.otherCategory}
-              onChange={(event) =>
-                updateDraft('otherCategory', event.target.value)
-              }
-              aria-invalid={Boolean(errors.otherCategory)}
-              aria-describedby={
-                errors.otherCategory
-                  ? 'other-category-error'
-                  : undefined
-              }
-            />
-
-            {errors.otherCategory && (
-              <p
-                className="mt-1.5 text-xs text-[#b34f55]"
-                id="other-category-error"
-              >
-                {errors.otherCategory}
-              </p>
-            )}
-          </div>
-        )}
 
         {/* Business Registration Number */}
         <div className="sm:col-span-2">
@@ -370,12 +331,12 @@ export function BusinessInfoForm() {
       </div>
 
       {/* API Error */}
-      {onboarding.error && (
+      {registration.error && (
         <p
           className="mt-4 rounded-lg border border-[#efc7c5] bg-[#fff4f3] px-3 py-2 text-sm text-[#9c3d42]"
           role="alert"
         >
-          {onboarding.error.message}
+          {registration.error.message}
         </p>
       )}
 
@@ -392,11 +353,9 @@ export function BusinessInfoForm() {
         <button
           className="h-12 flex-1 rounded-[9px] bg-[#193452] px-6 text-sm font-semibold text-white shadow-[0_7px_18px_rgba(25,52,82,0.18)] transition hover:bg-[#122943] disabled:cursor-wait disabled:opacity-70 sm:max-w-60"
           type="submit"
-          disabled={onboarding.isPending}
+          disabled={registration.isPending}
         >
-          {onboarding.isPending
-            ? 'Completing setup...'
-            : 'Complete setup'}
+          {registration.isPending ? 'Completing setup...' : 'Complete setup'}
         </button>
       </div>
     </form>

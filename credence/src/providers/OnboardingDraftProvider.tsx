@@ -1,16 +1,15 @@
+
 import { createContext, useContext, useMemo, useState } from 'react'
 import type { PropsWithChildren } from 'react'
 import type { BusinessInfo } from '../services/api/types.ts'
 
 export type SignupDraft = {
   businessName: string
-  fullName: string
   email: string
+  password: string
 }
 
-export type BusinessDraft = Omit<BusinessInfo, 'otherCategory'> & {
-  otherCategory: string
-}
+export type BusinessDraft = BusinessInfo
 
 type OnboardingDraftContextValue = {
   signupDraft: SignupDraft
@@ -24,13 +23,12 @@ const OnboardingDraftContext =
 
 const emptySignupDraft: SignupDraft = {
   businessName: '',
-  fullName: '',
   email: '',
+  password: '',
 }
 
 const emptyBusinessDraft: BusinessDraft = {
   category: '',
-  otherCategory: '',
   phoneNumber: '',
   registrationNumber: '',
   address: '',
@@ -39,8 +37,14 @@ const emptyBusinessDraft: BusinessDraft = {
 export function OnboardingDraftProvider({ children }: PropsWithChildren) {
   const [signupDraft, setSignupDraft] = useState(emptySignupDraft)
   const [businessDraft, setBusinessDraft] = useState(emptyBusinessDraft)
+
   const value = useMemo(
-    () => ({ signupDraft, businessDraft, setSignupDraft, setBusinessDraft }),
+    () => ({
+      signupDraft,
+      businessDraft,
+      setSignupDraft,
+      setBusinessDraft,
+    }),
     [signupDraft, businessDraft],
   )
 
@@ -53,10 +57,12 @@ export function OnboardingDraftProvider({ children }: PropsWithChildren) {
 
 export function useOnboardingDraft() {
   const context = useContext(OnboardingDraftContext)
+
   if (!context) {
     throw new Error(
       'useOnboardingDraft must be used within OnboardingDraftProvider.',
     )
   }
+
   return context
 }

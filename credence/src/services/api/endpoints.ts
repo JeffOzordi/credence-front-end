@@ -1,5 +1,6 @@
 export const apiEndpoints = {
   register: '/auth/register',
-  businessOnboarding: '/business/onboarding',
+  login: '/auth/login',
+  currentBusiness: '/me',
   dashboardOverview: '/dashboard/overview',
 } as const

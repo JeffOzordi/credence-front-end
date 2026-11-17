@@ -1,4 +1,4 @@
-﻿import { Navigate, Route, createBrowserRouter, createRoutesFromElements } from 'react-router-dom'
+﻿import { Navigate, Outlet, Route, createBrowserRouter, createRoutesFromElements } from 'react-router-dom'
 import { AuthLayout } from '../layouts/AuthLayout.tsx'
 import { LoginPage } from '../pages/LoginPage.tsx'
 import { SignupPage } from '../pages/SignupPage.tsx'
@@ -6,6 +6,11 @@ import { BusinessOnboardingPage } from '../pages/BusinessOnboardingPage.tsx'
 import { DashboardLayout } from '../layouts/DashboardLayout.tsx'
 import { OverviewPage } from '../pages/dashboard/OverviewPage.tsx'
 import { DashboardPlaceholderPage } from '../pages/dashboard/DashboardPlaceholderPage.tsx'
+import { getAuthToken } from '../services/auth/tokenStorage.ts'
+
+function ProtectedDashboardRoute() {
+  return getAuthToken() ? <Outlet /> : <Navigate to="/login" replace />
+}
 
 export const router = createBrowserRouter(
   createRoutesFromElements(
@@ -15,15 +20,17 @@ export const router = createBrowserRouter(
         <Route path="/signup" element={<SignupPage />} />
         <Route path="/onboarding/business" element={<BusinessOnboardingPage />} />
       </Route>
-      <Route element={<DashboardLayout />}>
-        <Route path="/overview" element={<OverviewPage />} />
-        <Route path="/transactions" element={<DashboardPlaceholderPage />} />
-        <Route path="/debtors" element={<DashboardPlaceholderPage />} />
-        <Route path="/reminders" element={<DashboardPlaceholderPage />} />
-        <Route path="/credit-management" element={<DashboardPlaceholderPage />} />
-        <Route path="/reports" element={<DashboardPlaceholderPage />} />
-        <Route path="/email-templates" element={<DashboardPlaceholderPage />} />
-        <Route path="/settings" element={<DashboardPlaceholderPage />} />
+      <Route element={<ProtectedDashboardRoute />}>
+        <Route element={<DashboardLayout />}>
+          <Route path="/overview" element={<OverviewPage />} />
+          <Route path="/transactions" element={<DashboardPlaceholderPage />} />
+          <Route path="/debtors" element={<DashboardPlaceholderPage />} />
+          <Route path="/reminders" element={<DashboardPlaceholderPage />} />
+          <Route path="/credit-management" element={<DashboardPlaceholderPage />} />
+          <Route path="/reports" element={<DashboardPlaceholderPage />} />
+          <Route path="/email-templates" element={<DashboardPlaceholderPage />} />
+          <Route path="/settings" element={<DashboardPlaceholderPage />} />
+        </Route>
       </Route>
       <Route path="/" element={<Navigate replace to="/login" />} />
       <Route path="*" element={<Navigate replace to="/login" />} />

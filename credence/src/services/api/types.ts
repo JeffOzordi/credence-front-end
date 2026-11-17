@@ -1,31 +1,65 @@
+
+export type BusinessCategory =
+  | 'banking_financial_services'
+  | 'microfinance'
+  | 'fintech_digital_lending'
+  | 'cooperatives_credit_unions'
+  | 'wholesale_distribution'
+  | 'manufacturing'
+  | 'retail_ecommerce'
+  | 'education'
+  | 'healthcare'
+  | 'real_estate_property_management'
+  | 'logistics_transportation'
+  | 'equipment_leasing_rentals'
+  | 'agriculture_agribusiness'
+  | 'professional_services'
+  | 'utilities_telecommunications'
+  | 'other'
+
 export type RegisterRequest = {
-  businessName: string
-  fullName: string
+  email: string
+  password: string
+  business_name: string
+  registration_number: string
+  phone: string
+  address: string
+  category: BusinessCategory
+}
+
+export type RegisterResponse = {
+  user: {
+    id: string
+    email: string
+  }
+  access_token: string
+  token_type: string
+}
+
+export type LoginRequest = {
   email: string
   password: string
 }
 
-export type RegisterResponse = {
-  userId: string
-  businessId: string
-  message: string
+export type LoginResponse = unknown
+
+export type CurrentBusiness = {
+  id: string
+  name: string
+  email: string
+  phone: string
+  address: string
+  registration_number: string
+  category: BusinessCategory
 }
 
 export type BusinessInfo = {
-  category: string
-  otherCategory?: string
+  category: BusinessCategory | ''
   phoneNumber: string
   registrationNumber: string
   address: string
 }
 
-export type BusinessOnboardingRequest = BusinessInfo
-
-export type BusinessOnboardingResponse = {
-  businessId: string
-  message: string
-  businessInfo: BusinessInfo
-}
 
 export type DashboardStat = {
   title: string

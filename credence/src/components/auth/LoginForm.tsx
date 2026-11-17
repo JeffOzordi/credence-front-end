@@ -1,11 +1,14 @@
-import { useState } from "react";
-import type { FormEvent } from "react";
-import { Link } from "react-router-dom";
+import { useState } from 'react'
+import type { FormEvent } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
+import { useLoginAccount } from '../../features/auth/hooks/useLoginAccount.ts'
+import { getLoginAccessToken } from '../../services/api/authentication.ts'
+import { saveAuthToken } from '../../services/auth/tokenStorage.ts'
 
 type FormErrors = {
-  email?: string;
-  password?: string;
-};
+  email?: string
+  password?: string
+}
 
 function EyeIcon({ visible }: { visible: boolean }) {
   return visible ? (
@@ -29,31 +32,62 @@ function EyeIcon({ visible }: { visible: boolean }) {
         strokeWidth="1.7"
       />
     </svg>
-  );
+  )
 }
 
 export function LoginForm() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [rememberMe, setRememberMe] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
-  const [errors, setErrors] = useState<FormErrors>({});
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const navigate = useNavigate()
+  const login = useLoginAccount()
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [rememberMe, setRememberMe] = useState(false)
+  const [showPassword, setShowPassword] = useState(false)
+  const [errors, setErrors] = useState<FormErrors>({})
+  const [responseError, setResponseError] = useState<string | null>(null)
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    const nextErrors: FormErrors = {};
-    if (!email.trim()) nextErrors.email = "Business email is required.";
-    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
-      nextErrors.email = "Enter a valid business email.";
-    if (!password) nextErrors.password = "Password is required.";
-    else if (password.length < 8)
-      nextErrors.password = "Password must be at least 8 characters.";
-    setErrors(nextErrors);
-    if (Object.keys(nextErrors).length > 0) return;
+    event.preventDefault()
+    setResponseError(null)
+    const nextErrors: FormErrors = {}
 
-    setIsSubmitting(true);
-    window.setTimeout(() => setIsSubmitting(false), 900);
+    if (!email.trim()) {
+      nextErrors.email = 'Business email is required.'
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      nextErrors.email = 'Enter a valid business email.'
+    }
+
+    if (!password) {
+      nextErrors.password = 'Password is required.'
+    } else if (password.length < 8) {
+      nextErrors.password = 'Password must be at least 8 characters.'
+    }
+
+    setErrors(nextErrors)
+
+    if (Object.keys(nextErrors).length > 0) {
+      return
+    }
+
+    login.mutate(
+      {
+        email: email.trim(),
+        password,
+      },
+      {
+        onSuccess: (response) => {
+          const accessToken = getLoginAccessToken(response)
+          if (!accessToken) {
+            setResponseError(
+              'The server returned an unexpected login response without an access token.',
+            )
+            return
+          }
+
+          saveAuthToken(accessToken, rememberMe)
+          navigate('/overview', { replace: true })
+        },
+      },
+    )
   }
 
   return (
@@ -67,7 +101,7 @@ export function LoginForm() {
             Business email
           </label>
           <input
-            className={`h-12 w-full rounded-[9px] border bg-white px-4 text-sm text-[#203333] outline-none transition placeholder:text-[#a7b0ad] focus:border-[#527f6a] focus:ring-4 focus:ring-[#527f6a]/10 ${errors.email ? "border-[#c66b68]" : "border-[#dce3df]"}`}
+            className={`h-12 w-full rounded-[9px] border bg-white px-4 text-sm text-[#203333] outline-none transition placeholder:text-[#a7b0ad] focus:border-[#527f6a] focus:ring-4 focus:ring-[#527f6a]/10 ${errors.email ? 'border-[#c66b68]' : 'border-[#dce3df]'}`}
             id="email"
             name="email"
             type="email"
@@ -75,12 +109,12 @@ export function LoginForm() {
             placeholder="you@company.com"
             value={email}
             onChange={(event) => {
-              setEmail(event.target.value);
+              setEmail(event.target.value)
               if (errors.email)
-                setErrors((current) => ({ ...current, email: undefined }));
+                setErrors((current) => ({ ...current, email: undefined }))
             }}
             aria-invalid={Boolean(errors.email)}
-            aria-describedby={errors.email ? "email-error" : undefined}
+            aria-describedby={errors.email ? 'email-error' : undefined}
           />
           {errors.email && (
             <p className="mt-1.5 text-xs text-[#b34f55]" id="email-error">
@@ -106,26 +140,26 @@ export function LoginForm() {
           </div>
           <div className="relative">
             <input
-              className={`h-12 w-full rounded-[9px] border bg-white px-4 pr-12 text-sm text-[#203333] outline-none transition placeholder:text-[#a7b0ad] focus:border-[#527f6a] focus:ring-4 focus:ring-[#527f6a]/10 ${errors.password ? "border-[#c66b68]" : "border-[#dce3df]"}`}
+              className={`h-12 w-full rounded-[9px] border bg-white px-4 pr-12 text-sm text-[#203333] outline-none transition placeholder:text-[#a7b0ad] focus:border-[#527f6a] focus:ring-4 focus:ring-[#527f6a]/10 ${errors.password ? 'border-[#c66b68]' : 'border-[#dce3df]'}`}
               id="password"
               name="password"
-              type={showPassword ? "text" : "password"}
+              type={showPassword ? 'text' : 'password'}
               autoComplete="current-password"
               placeholder="Enter your password"
               value={password}
               onChange={(event) => {
-                setPassword(event.target.value);
+                setPassword(event.target.value)
                 if (errors.password)
-                  setErrors((current) => ({ ...current, password: undefined }));
+                  setErrors((current) => ({ ...current, password: undefined }))
               }}
               aria-invalid={Boolean(errors.password)}
-              aria-describedby={errors.password ? "password-error" : undefined}
+              aria-describedby={errors.password ? 'password-error' : undefined}
             />
             <button
               className="absolute right-3 top-1/2 grid size-8 -translate-y-1/2 place-items-center rounded-md text-[#899590] hover:bg-[#eff3f0] hover:text-[#42674f]"
               type="button"
               onClick={() => setShowPassword((visible) => !visible)}
-              aria-label={showPassword ? "Hide password" : "Show password"}
+              aria-label={showPassword ? 'Hide password' : 'Show password'}
             >
               <EyeIcon visible={showPassword} />
             </button>
@@ -147,17 +181,29 @@ export function LoginForm() {
           Remember me
         </label>
 
+        {(login.error || responseError) && (
+          <p
+            className="rounded-lg border border-[#efc7c5] bg-[#fff4f3] px-3 py-2 text-sm text-[#9c3d42]"
+            role="alert"
+          >
+            {responseError ??
+              (login.error instanceof Error
+                ? login.error.message
+                : 'We could not sign you in. Please try again.')}
+          </p>
+        )}
+
         <button
           className="h-12 w-full rounded-[9px] bg-[#193452] text-sm font-semibold text-white shadow-[0_7px_18px_rgba(24,59,54,0.18)] transition hover:bg-[#102f2b] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#527f6a] disabled:cursor-wait cursor-pointer disabled:opacity-70"
           type="submit"
-          disabled={isSubmitting}
+          disabled={login.isPending}
         >
-          {isSubmitting ? "Signing in..." : "Sign in"}
+          {login.isPending ? 'Signing in...' : 'Sign in'}
         </button>
       </div>
 
       <p className="mt-7 text-center text-sm text-[#77827d]">
-        New to Credence?{" "}
+        New to Credence?{' '}
         <Link
           className="font-semibold text-[#416d54] hover:underline"
           to="/signup"
@@ -170,5 +216,5 @@ export function LoginForm() {
         and compliance at its core.
       </p>
     </form>
-  );
+  )
 }

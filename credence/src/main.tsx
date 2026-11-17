@@ -6,9 +6,14 @@ import { QueryProvider } from './providers/QueryProvider.tsx'
 import { OnboardingDraftProvider } from './providers/OnboardingDraftProvider.tsx'
 
 async function enableMockApi() {
-  if (import.meta.env.DEV) {
+  const mocksEnabled =
+    import.meta.env.DEV &&
+    (import.meta.env.VITE_ENABLE_MOCKS === 'true' ||
+      import.meta.env.VITE_ENABLE_MOCKS === undefined)
+
+  if (mocksEnabled) {
     const { worker } = await import('./mocks/browser.ts')
-    await worker.start({ onUnhandledRequest: 'bypass' })
+    await worker.start()
   }
 }
 
