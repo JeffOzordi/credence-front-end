@@ -37,7 +37,7 @@ export function DashboardHeader({
           <NotificationButton />
           <Link
             className="inline-flex min-h-10 items-center justify-center gap-2 rounded-xl bg-[#1fa35b] px-4 text-xs font-semibold text-white shadow-[0_6px_14px_rgba(31,163,91,0.18)] transition hover:bg-[#17874a] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#16824a] sm:text-[13px]"
-            to="/transactions"
+            to="/transactions/new"
           >
             <span aria-hidden="true" className="text-lg leading-none">+</span>
             <span>Create New Credit Transaction</span>
@@ -64,7 +64,7 @@ export function DashboardHeader({
           <Link
             aria-label="Create a new credit transaction"
             className="grid size-10 place-items-center rounded-xl bg-[#1fa35b] text-xl font-medium text-white"
-            to="/transactions"
+            to="/transactions/new"
           >
             +
           </Link>

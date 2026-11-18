@@ -10,6 +10,7 @@ const pageDetails: Record<string, { title: string; description: string }> = {
     description: 'Your business credit position at a glance.',
   },
   '/transactions': { title: 'Transactions', description: 'Manage your credit transactions.' },
+  '/transactions/new': { title: 'Create transaction', description: 'Record credit terms and repayment details.' },
   '/debtors': { title: 'Debtors', description: 'View and manage your debtors.' },
   '/reminders': { title: 'Reminders', description: 'Stay ahead of upcoming repayments.' },
   '/credit-management': { title: 'Credit Management', description: 'Monitor your credit exposure.' },
@@ -27,7 +28,10 @@ export function DashboardLayout() {
   const [menuOpen, setMenuOpen] = useState(false)
   const [search, setSearch] = useState('')
   const closeMenu = useCallback(() => setMenuOpen(false), [])
-  const page = pageDetails[pathname] ?? pageDetails['/overview']
+  const page = pageDetails[pathname] ??
+    (pathname.startsWith('/transactions/')
+      ? { title: 'Transaction details', description: 'Review transaction and repayment details.' }
+      : pageDetails['/overview'])
 
   return (
     <div className="flex h-dvh w-full overflow-hidden bg-[#f5f7fa]">

@@ -7,6 +7,9 @@ import { DashboardLayout } from '../layouts/DashboardLayout.tsx'
 import { OverviewPage } from '../pages/dashboard/OverviewPage.tsx'
 import { DashboardPlaceholderPage } from '../pages/dashboard/DashboardPlaceholderPage.tsx'
 import { SettingsPage } from '../pages/dashboard/SettingsPage.tsx'
+import { TransactionsPage } from '../pages/dashboard/TransactionsPage.tsx'
+import { CreateTransactionPage } from '../pages/dashboard/CreateTransactionPage.tsx'
+import { TransactionDetailsPage } from '../pages/dashboard/TransactionDetailsPage.tsx'
 import { ProtectedDashboardRoute } from './ProtectedDashboardRoute.tsx'
 
 export const router = createBrowserRouter(
@@ -20,7 +23,9 @@ export const router = createBrowserRouter(
       <Route element={<ProtectedDashboardRoute />}>
         <Route element={<DashboardLayout />}>
           <Route path="/overview" element={<OverviewPage />} />
-          <Route path="/transactions" element={<DashboardPlaceholderPage />} />
+          <Route path="/transactions" element={<TransactionsPage />} />
+          <Route path="/transactions/new" element={<CreateTransactionPage />} />
+          <Route path="/transactions/:transactionId" element={<TransactionDetailsPage />} />
           <Route path="/debtors" element={<DashboardPlaceholderPage />} />
           <Route path="/reminders" element={<DashboardPlaceholderPage />} />
           <Route path="/credit-management" element={<DashboardPlaceholderPage />} />
