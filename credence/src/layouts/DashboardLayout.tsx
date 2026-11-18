@@ -15,6 +15,7 @@ const pageDetails: Record<string, { title: string; description: string }> = {
   '/reminders': { title: 'Reminders', description: 'Stay ahead of upcoming repayments.' },
   '/credit-management': { title: 'Credit Management', description: 'Monitor your credit exposure.' },
   '/reports': { title: 'Reports & Insights', description: 'Understand your collection performance.' },
+  '/insights': { title: 'Reports & Insights', description: 'Understand your collection performance.' },
   '/email-templates': { title: 'Email Templates', description: 'Manage your collection communications.' },
   '/settings': { title: 'Settings', description: 'Manage your account and preferences.' },
 }
@@ -28,10 +29,19 @@ export function DashboardLayout() {
   const [menuOpen, setMenuOpen] = useState(false)
   const [search, setSearch] = useState('')
   const closeMenu = useCallback(() => setMenuOpen(false), [])
-  const page = pageDetails[pathname] ??
+  const page =
+    pageDetails[pathname] ??
     (pathname.startsWith('/transactions/')
-      ? { title: 'Transaction details', description: 'Review transaction and repayment details.' }
-      : pageDetails['/overview'])
+      ? {
+          title: 'Transaction details',
+          description: 'Review transaction and repayment details.',
+        }
+      : pathname.startsWith('/debtors/')
+        ? {
+            title: 'Debtor details',
+            description: 'Review debtor information and repayment history.',
+          }
+        : pageDetails['/overview'])
 
   return (
     <div className="flex h-dvh w-full overflow-hidden bg-[#f5f7fa]">

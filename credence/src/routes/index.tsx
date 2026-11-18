@@ -10,6 +10,11 @@ import { SettingsPage } from '../pages/dashboard/SettingsPage.tsx'
 import { TransactionsPage } from '../pages/dashboard/TransactionsPage.tsx'
 import { CreateTransactionPage } from '../pages/dashboard/CreateTransactionPage.tsx'
 import { TransactionDetailsPage } from '../pages/dashboard/TransactionDetailsPage.tsx'
+import { DebtorsPage } from '../pages/dashboard/DebtorsPage.tsx'
+import { DebtorDetailsPage } from '../pages/dashboard/DebtorDetailsPage.tsx'
+import { CreditManagementPage } from '../pages/dashboard/CreditManagementPage.tsx'
+import { EmailTemplatesPage } from '../pages/dashboard/EmailTemplatesPage.tsx'
+import { ReportsInsightsPage } from '../pages/dashboard/ReportsInsightsPage.tsx'
 import { ProtectedDashboardRoute } from './ProtectedDashboardRoute.tsx'
 
 export const router = createBrowserRouter(
@@ -26,11 +31,13 @@ export const router = createBrowserRouter(
           <Route path="/transactions" element={<TransactionsPage />} />
           <Route path="/transactions/new" element={<CreateTransactionPage />} />
           <Route path="/transactions/:transactionId" element={<TransactionDetailsPage />} />
-          <Route path="/debtors" element={<DashboardPlaceholderPage />} />
+          <Route path="/debtors" element={<DebtorsPage />} />
+          <Route path="/debtors/:debtorId" element={<DebtorDetailsPage />} />
           <Route path="/reminders" element={<DashboardPlaceholderPage />} />
-          <Route path="/credit-management" element={<DashboardPlaceholderPage />} />
-          <Route path="/reports" element={<DashboardPlaceholderPage />} />
-          <Route path="/email-templates" element={<DashboardPlaceholderPage />} />
+          <Route path="/credit-management" element={<CreditManagementPage />} />
+          <Route path="/reports" element={<ReportsInsightsPage />} />
+          <Route path="/insights" element={<ReportsInsightsPage />} />
+          <Route path="/email-templates" element={<EmailTemplatesPage />} />
           <Route path="/settings" element={<SettingsPage />} />
         </Route>
       </Route>
