@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useCreateTransaction } from '../../features/transactions/hooks/useCreateTransaction.ts'
 import { useDebtors } from '../../features/transactions/hooks/useDebtors.ts'
+import { useCreateDebtor } from '../../features/debtors/hooks/useCreateDebtor.ts'
 import { formatNaira, formatTransactionDate } from '../../features/transactions/formatters.ts'
 import type {
   NewCreditTransaction,
@@ -39,8 +40,15 @@ export function CreateTransactionPage() {
   const navigate = useNavigate()
   const debtors = useDebtors()
   const createTransaction = useCreateTransaction()
+  const createDebtor = useCreateDebtor()
   const [step, setStep] = useState(0)
   const [debtorId, setDebtorId] = useState('')
+  const [debtorName, setDebtorName] = useState('')
+  const [showNewDebtor, setShowNewDebtor] = useState(false)
+  const [newDebtorContact, setNewDebtorContact] = useState('')
+  const [newDebtorEmail, setNewDebtorEmail] = useState('')
+  const [newDebtorPhone, setNewDebtorPhone] = useState('')
+  const [newDebtorBvn, setNewDebtorBvn] = useState('')
   const [invoiceReference, setInvoiceReference] = useState('')
   const [amount, setAmount] = useState('')
   const [transactionDate, setTransactionDate] = useState(todayAsDateInput)
@@ -59,8 +67,14 @@ export function CreateTransactionPage() {
     const nextErrors: Record<string, string> = {}
 
     if (step === 0) {
-      if (!debtorId) {
-        nextErrors.debtorId = 'Select a debtor.'
+      if (!debtorId && !debtorName.trim()) {
+        nextErrors.debtorId = 'Enter or select a debtor.'
+      }
+      if (!debtorId && debtorName.trim() && showNewDebtor) {
+        if (!newDebtorContact.trim()) nextErrors.newDebtorContact = 'Enter a contact name.'
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(newDebtorEmail.trim())) nextErrors.newDebtorEmail = 'Enter a valid email address.'
+        if (!newDebtorPhone.trim()) nextErrors.newDebtorPhone = 'Enter a phone number.'
+        if (!/^\d{11}$/.test(newDebtorBvn)) nextErrors.newDebtorBvn = 'BVN must contain exactly 11 numeric digits.'
       }
       if (!invoiceReference.trim()) {
         nextErrors.invoiceReference = 'Enter an invoice reference.'
@@ -100,8 +114,28 @@ export function CreateTransactionPage() {
   }
 
   function submitTransaction() {
+    if (!debtorId && debtorName.trim()) {
+      createDebtor.mutate({
+        name: debtorName.trim(),
+        type: 'Business',
+        contactName: newDebtorContact.trim(),
+        email: newDebtorEmail.trim(),
+        phone: newDebtorPhone.trim(),
+        address: 'Address to be updated',
+        bvn: newDebtorBvn,
+      }, {
+        onSuccess: (debtor) => {
+          submitForDebtor(debtor.id)
+        },
+      })
+      return
+    }
+    submitForDebtor(debtorId)
+  }
+
+  function submitForDebtor(resolvedDebtorId: string) {
     const input: NewCreditTransaction = {
-      debtorId,
+      debtorId: resolvedDebtorId,
       invoiceReference: invoiceReference.trim(),
       amount: parsedAmount,
       transactionDate,
@@ -205,20 +239,29 @@ export function CreateTransactionPage() {
               </p>
               <div className="mt-5 grid gap-4 sm:grid-cols-2">
                 <div>
-                  <label className={labelClass} htmlFor="transaction-debtor">Debtor</label>
-                  <select
+                  <label className={labelClass} htmlFor="transaction-debtor">Debtor name</label>
+                  <input
+                    aria-autocomplete="list"
                     className={fieldClass}
                     id="transaction-debtor"
-                    onChange={(event) => setDebtorId(event.target.value)}
-                    value={debtorId}
-                  >
-                    <option value="">Select a debtor</option>
+                    list="transaction-debtor-suggestions"
+                    onChange={(event) => {
+                      const value = event.target.value
+                      setDebtorName(value)
+                      const exactMatch = debtors.data.find(
+                        (debtor) => debtor.name.toLowerCase() === value.trim().toLowerCase(),
+                      )
+                      setDebtorId(exactMatch?.id ?? '')
+                      setShowNewDebtor(Boolean(value.trim()) && !exactMatch)
+                    }}
+                    placeholder="Search or enter a debtor name"
+                    value={debtorName}
+                  />
+                  <datalist id="transaction-debtor-suggestions">
                     {debtors.data.map((debtor) => (
-                      <option key={debtor.id} value={debtor.id}>
-                        {debtor.name} — {debtor.contactName}
-                      </option>
+                      <option key={debtor.id} value={debtor.name} />
                     ))}
-                  </select>
+                  </datalist>
                   {errors.debtorId && <p className="mt-1 text-[10px] text-[#c44742]">{errors.debtorId}</p>}
                 </div>
                 <div>
@@ -258,6 +301,39 @@ export function CreateTransactionPage() {
                   {errors.transactionDate && <p className="mt-1 text-[10px] text-[#c44742]">{errors.transactionDate}</p>}
                 </div>
               </div>
+              {showNewDebtor && (
+                <div className="mt-5 rounded-xl border border-[#e5eaf0] bg-[#f8fafc] p-4">
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <p className="text-xs font-semibold text-[#20354d]">Create this debtor</p>
+                      <p className="mt-1 text-[10px] text-[#8090a1]">This debtor will be added to the transaction and debtor directory.</p>
+                    </div>
+                    <button className="text-[10px] font-semibold text-[#718398]" onClick={() => setShowNewDebtor(false)} type="button">Cancel</button>
+                  </div>
+                  <div className="mt-4 grid gap-3 sm:grid-cols-2">
+                    <div>
+                      <label className={labelClass} htmlFor="new-debtor-contact">Contact name</label>
+                      <input className={fieldClass} id="new-debtor-contact" onChange={(event) => setNewDebtorContact(event.target.value)} value={newDebtorContact} />
+                      {errors.newDebtorContact && <p className="mt-1 text-[10px] text-[#c44742]">{errors.newDebtorContact}</p>}
+                    </div>
+                    <div>
+                      <label className={labelClass} htmlFor="new-debtor-email">Email address</label>
+                      <input className={fieldClass} id="new-debtor-email" onChange={(event) => setNewDebtorEmail(event.target.value)} type="email" value={newDebtorEmail} />
+                      {errors.newDebtorEmail && <p className="mt-1 text-[10px] text-[#c44742]">{errors.newDebtorEmail}</p>}
+                    </div>
+                    <div>
+                      <label className={labelClass} htmlFor="new-debtor-phone">Phone number</label>
+                      <input className={fieldClass} id="new-debtor-phone" onChange={(event) => setNewDebtorPhone(event.target.value)} type="tel" value={newDebtorPhone} />
+                      {errors.newDebtorPhone && <p className="mt-1 text-[10px] text-[#c44742]">{errors.newDebtorPhone}</p>}
+                    </div>
+                    <div>
+                      <label className={labelClass} htmlFor="new-debtor-bvn">BVN <span className="font-normal text-[#8594a4]">(11 digits)</span></label>
+                      <input className={fieldClass} id="new-debtor-bvn" inputMode="numeric" maxLength={11} onChange={(event) => setNewDebtorBvn(event.target.value.replace(/\D/g, '').slice(0, 11))} type="password" value={newDebtorBvn} />
+                      {errors.newDebtorBvn && <p className="mt-1 text-[10px] text-[#c44742]">{errors.newDebtorBvn}</p>}
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           )}
 

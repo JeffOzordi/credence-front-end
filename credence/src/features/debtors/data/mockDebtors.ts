@@ -27,6 +27,7 @@ export const mockDebtors: Debtor[] = [
     phone: '0805 332 1188',
     address: 'Kano, Nigeria',
     registrationNumber: 'RC 772310',
+    bvnLast4: '0001',
     onTimeRate: 92,
     status: 'Good standing',
     credits: [
@@ -119,6 +120,7 @@ export const mockDebtors: Debtor[] = [
     phone: '0803 111 2244',
     address: 'Onitsha, Nigeria',
     registrationNumber: 'RC 401829',
+    bvnLast4: '0002',
     onTimeRate: 64,
     status: 'At risk',
     credits: [
@@ -187,6 +189,7 @@ export const mockDebtors: Debtor[] = [
     phone: '0809 442 5566',
     address: 'Abuja, Nigeria',
     registrationNumber: 'RC 668204',
+    bvnLast4: '0003',
     onTimeRate: 88,
     status: 'Good standing',
     credits: [
@@ -240,6 +243,7 @@ export const mockDebtors: Debtor[] = [
     phone: '0806 778 9900',
     address: 'Kano, Nigeria',
     registrationNumber: 'RC 881460',
+    bvnLast4: '0004',
     onTimeRate: 58,
     status: 'Watch',
     credits: [
@@ -293,6 +297,7 @@ export const mockDebtors: Debtor[] = [
     phone: '0812 345 6789',
     address: 'Lagos, Nigeria',
     registrationNumber: 'RC 913025',
+    bvnLast4: '0005',
     onTimeRate: 71,
     status: 'Watch',
     credits: [
@@ -346,6 +351,7 @@ export const mockDebtors: Debtor[] = [
     phone: '0806 200 4511',
     address: 'Enugu, Nigeria',
     registrationNumber: 'RC 410227',
+    bvnLast4: '0006',
     onTimeRate: 100,
     status: 'Good standing',
     credits: [
@@ -399,6 +405,7 @@ export const mockDebtors: Debtor[] = [
     phone: '0804 612 0992',
     address: 'Port Harcourt, Nigeria',
     registrationNumber: 'RC 601184',
+    bvnLast4: '0007',
     onTimeRate: 80,
     status: 'Good standing',
     credits: [

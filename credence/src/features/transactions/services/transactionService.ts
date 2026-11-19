@@ -1,4 +1,5 @@
 import { mockDebtors, mockTransactions } from '../data/mockTransactions.ts'
+import { listDebtors as listMockDebtorRecords } from '../../debtors/services/debtorService.ts'
 import type {
   CreditTransaction,
   NewCreditTransaction,
@@ -105,7 +106,20 @@ export async function listTransactions(): Promise<CreditTransaction[]> {
 
 export async function listMockDebtors() {
   await waitForMockResponse()
-  return [...mockDebtors]
+  const fullDebtors = await listMockDebtorRecords()
+  const combined = new Map(mockDebtors.map((debtor) => [debtor.id, debtor]))
+  for (const debtor of fullDebtors) {
+    combined.set(debtor.id, {
+      id: debtor.id,
+      name: debtor.name,
+      contactName: debtor.contactName,
+      phone: debtor.phone,
+      email: debtor.email,
+      onTimeRate: debtor.onTimeRate ?? 0,
+      pastTransactionCount: debtor.credits.length,
+    })
+  }
+  return [...combined.values()]
 }
 
 export async function getTransaction(
@@ -124,7 +138,7 @@ export async function createTransaction(
 ): Promise<CreditTransaction> {
   await waitForMockResponse()
 
-  const debtor = mockDebtors.find((record) => record.id === input.debtorId)
+  const debtor = (await listMockDebtors()).find((record) => record.id === input.debtorId)
   if (!debtor) {
     throw new Error('Select a debtor from the available mock records.')
   }

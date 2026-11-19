@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useCreditManagement } from '../../features/creditManagement/hooks/useCreditManagement.ts'
+import { saveDebtorCreditLimit } from '../../features/creditManagement/services/creditService.ts'
 import { formatNaira } from '../../features/transactions/formatters.ts'
 
 export function CreditManagementPage() {
@@ -30,9 +31,17 @@ export function CreditManagementPage() {
     setLimitValue(String(limit))
   }
 
-  function saveLimit() {
-    setMessage(`${editingLimit} limit preview updated for this session.`)
-    setEditingLimit(null)
+  async function saveLimit() {
+    const record = data.limits.find((limit) => limit.debtorName === editingLimit)
+    if (!record) return
+    try {
+      await saveDebtorCreditLimit(record.debtorId, Number(limitValue))
+      await credit.refetch()
+      setMessage(`${editingLimit} limit updated for this session.`)
+      setEditingLimit(null)
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : 'Could not save the credit limit.')
+    }
   }
 
   return (

@@ -13,6 +13,7 @@ const pageDetails: Record<string, { title: string; description: string }> = {
   '/transactions/new': { title: 'Create transaction', description: 'Record credit terms and repayment details.' },
   '/debtors': { title: 'Debtors', description: 'View and manage your debtors.' },
   '/reminders': { title: 'Reminders', description: 'Stay ahead of upcoming repayments.' },
+  '/reminders/settings': { title: 'Reminder Settings', description: 'Configure default repayment reminders.' },
   '/credit-management': { title: 'Credit Management', description: 'Monitor your credit exposure.' },
   '/reports': { title: 'Reports & Insights', description: 'Understand your collection performance.' },
   '/insights': { title: 'Reports & Insights', description: 'Understand your collection performance.' },

@@ -149,6 +149,12 @@ export function DebtorDetailsPage() {
                     <span aria-hidden="true">•</span> {debtor.registrationNumber}
                   </>
                 )}
+                {debtor.bvnLast4 && (
+                  <>
+                    {' '}
+                    <span aria-hidden="true">•</span> BVN ••••{debtor.bvnLast4}
+                  </>
+                )}
               </p>
             </div>
           </div>

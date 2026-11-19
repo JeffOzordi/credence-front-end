@@ -60,6 +60,8 @@ export type Debtor = {
   phone: string
   address: string
   registrationNumber?: string
+  bvnLast4?: string
+  bvnHash?: string
   onTimeRate: number | null
   status: DebtorStatus
   credits: DebtorCredit[]
@@ -82,4 +84,5 @@ export type NewDebtor = Pick<
   'name' | 'type' | 'contactName' | 'email' | 'phone' | 'address'
 > & {
   registrationNumber?: string
+  bvn: string
 }

@@ -16,6 +16,7 @@ type FormValues = {
   phone: string
   address: string
   registrationNumber: string
+  bvn: string
 }
 
 const initialValues: FormValues = {
@@ -26,6 +27,7 @@ const initialValues: FormValues = {
   phone: '',
   address: '',
   registrationNumber: '',
+  bvn: '',
 }
 
 const fieldClass =
@@ -69,6 +71,9 @@ export function CreateDebtorDialog({ onClose }: Props) {
     ) {
       nextErrors.email = 'Enter a valid email address.'
     }
+    if (!/^\d{11}$/.test(values.bvn.trim())) {
+      nextErrors.bvn = 'BVN must contain exactly 11 numeric digits.'
+    }
 
     setErrors(nextErrors)
     if (Object.keys(nextErrors).length > 0) {
@@ -83,6 +88,7 @@ export function CreateDebtorDialog({ onClose }: Props) {
       phone: values.phone,
       address: values.address,
       registrationNumber: values.registrationNumber,
+      bvn: values.bvn,
     }
 
     createDebtor.mutate(input, {
@@ -217,6 +223,21 @@ export function CreateDebtorDialog({ onClose }: Props) {
                 value={values.address}
               />
               {errors.address && <p className="mt-1 text-[10px] text-[#bd4147]">{errors.address}</p>}
+            </div>
+            <div className="sm:col-span-2">
+              <label className={labelClass} htmlFor="debtor-bvn">BVN <span className="font-normal text-[#8594a4]">(11 digits)</span></label>
+              <input
+                aria-invalid={Boolean(errors.bvn)}
+                className={fieldClass}
+                id="debtor-bvn"
+                inputMode="numeric"
+                maxLength={11}
+                onChange={(event) => updateField('bvn', event.target.value.replace(/\D/g, '').slice(0, 11))}
+                type="password"
+                value={values.bvn}
+              />
+              {errors.bvn && <p className="mt-1 text-[10px] text-[#bd4147]">{errors.bvn}</p>}
+              <p className="mt-1 text-[10px] leading-4 text-[#8594a4]">Use synthetic test digits only. The full BVN is never displayed or persisted.</p>
             </div>
           </div>
 

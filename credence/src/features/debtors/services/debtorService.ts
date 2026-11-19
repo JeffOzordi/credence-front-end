@@ -67,6 +67,10 @@ function isDebtor(value: unknown): value is Debtor {
     typeof value.address === 'string' &&
     (value.registrationNumber === undefined ||
       typeof value.registrationNumber === 'string') &&
+    (value.bvnLast4 === undefined ||
+      typeof value.bvnLast4 === 'string') &&
+    (value.bvnHash === undefined ||
+      typeof value.bvnHash === 'string') &&
     (value.onTimeRate === null || typeof value.onTimeRate === 'number') &&
     ['Good standing', 'Watch', 'At risk', 'New'].includes(String(value.status)) &&
     value.credits.every(
@@ -168,6 +172,26 @@ function waitForMockResponse() {
   })
 }
 
+async function hashBvn(bvn: string): Promise<string> {
+  const digest = await crypto.subtle.digest(
+    'SHA-256',
+    new TextEncoder().encode(bvn),
+  )
+  return Array.from(new Uint8Array(digest))
+    .map((byte) => byte.toString(16).padStart(2, '0'))
+    .join('')
+}
+
+const syntheticFixtureBvns = [
+  '22200000001',
+  '22200000002',
+  '22200000003',
+  '22200000004',
+  '22200000005',
+  '22200000006',
+  '22200000007',
+]
+
 function withStoredNotes(debtor: Debtor): Debtor {
   return {
     ...debtor,
@@ -234,6 +258,20 @@ export async function createDebtor(input: NewDebtor): Promise<Debtor> {
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
     throw new Error('Enter a valid email address.')
   }
+  const bvn = input.bvn.trim()
+  if (!/^\d{11}$/.test(bvn)) {
+    throw new Error('BVN must contain exactly 11 numeric digits.')
+  }
+  const bvnHash = await hashBvn(bvn)
+  const fixtureHashes = await Promise.all(
+    syntheticFixtureBvns.map((fixtureBvn) => hashBvn(fixtureBvn)),
+  )
+  const existingHashes = getAllDebtors()
+    .map((debtor) => debtor.bvnHash)
+    .filter((hash): hash is string => Boolean(hash))
+  if (fixtureHashes.includes(bvnHash) || existingHashes.includes(bvnHash)) {
+    throw new Error('A debtor with this BVN already exists.')
+  }
   if (getAllDebtors().some((debtor) => debtor.email.toLowerCase() === email)) {
     throw new Error('A debtor with this email address already exists.')
   }
@@ -249,6 +287,8 @@ export async function createDebtor(input: NewDebtor): Promise<Debtor> {
     ...(input.registrationNumber?.trim()
       ? { registrationNumber: input.registrationNumber.trim() }
       : {}),
+    bvnLast4: bvn.slice(-4),
+    bvnHash,
     onTimeRate: null,
     status: 'New',
     credits: [],

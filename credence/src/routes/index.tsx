@@ -5,7 +5,6 @@ import { SignupPage } from '../pages/SignupPage.tsx'
 import { BusinessOnboardingPage } from '../pages/BusinessOnboardingPage.tsx'
 import { DashboardLayout } from '../layouts/DashboardLayout.tsx'
 import { OverviewPage } from '../pages/dashboard/OverviewPage.tsx'
-import { DashboardPlaceholderPage } from '../pages/dashboard/DashboardPlaceholderPage.tsx'
 import { SettingsPage } from '../pages/dashboard/SettingsPage.tsx'
 import { TransactionsPage } from '../pages/dashboard/TransactionsPage.tsx'
 import { CreateTransactionPage } from '../pages/dashboard/CreateTransactionPage.tsx'
@@ -15,6 +14,7 @@ import { DebtorDetailsPage } from '../pages/dashboard/DebtorDetailsPage.tsx'
 import { CreditManagementPage } from '../pages/dashboard/CreditManagementPage.tsx'
 import { EmailTemplatesPage } from '../pages/dashboard/EmailTemplatesPage.tsx'
 import { ReportsInsightsPage } from '../pages/dashboard/ReportsInsightsPage.tsx'
+import { RemindersPage } from '../pages/dashboard/RemindersPage.tsx'
 import { ProtectedDashboardRoute } from './ProtectedDashboardRoute.tsx'
 
 export const router = createBrowserRouter(
@@ -33,7 +33,8 @@ export const router = createBrowserRouter(
           <Route path="/transactions/:transactionId" element={<TransactionDetailsPage />} />
           <Route path="/debtors" element={<DebtorsPage />} />
           <Route path="/debtors/:debtorId" element={<DebtorDetailsPage />} />
-          <Route path="/reminders" element={<DashboardPlaceholderPage />} />
+          <Route path="/reminders" element={<RemindersPage />} />
+          <Route path="/reminders/settings" element={<RemindersPage />} />
           <Route path="/credit-management" element={<CreditManagementPage />} />
           <Route path="/reports" element={<ReportsInsightsPage />} />
           <Route path="/insights" element={<ReportsInsightsPage />} />
